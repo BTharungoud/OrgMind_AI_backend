@@ -1,0 +1,1352 @@
+{
+  "info": {
+    "name": "AI Agent Backend - Postman Collection",
+    "_postman_id": "ai-agent-backend-collection",
+    "description": "Collection for the current AI Agent backend API. Set baseUrl as needed. Log in first to populate jwt and refreshToken automatically; protected endpoints use the jwt variable.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8081",
+      "description": "Backend base URL"
+    },
+    {
+      "key": "jwt",
+      "value": "",
+      "description": "Bearer access token for protected requests"
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "description": "JWT refresh token"
+    },
+    {
+      "key": "registrationToken",
+      "value": "",
+      "description": "Optional token returned by Registration - Create Dev Token"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/actuator/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "actuator",
+            "health"
+          ]
+        }
+      }
+    },
+    {
+      "name": "User - Register",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"test@example.com\",\n  \"password\": \"Test@1234\",\n  \"confirmPassword\": \"Test@1234\",\n  \"departmentId\": 1,\n  \"roleId\": 1,\n  \"registrationToken\": \"{{registrationToken}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/user/register",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "user",
+            "register"
+          ]
+        }
+      }
+    },
+    {
+      "name": "User - Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"Test@1234\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/user/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "user",
+            "login"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const response = pm.response.json();",
+              "if (response.success && response.data) {",
+              "  pm.collectionVariables.set('jwt', response.data.token || response.data.accessToken || '');",
+              "  pm.collectionVariables.set('refreshToken', response.data.refreshToken || '');",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "User - Refresh Token",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/user/refresh-token",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "user",
+            "refresh-token"
+          ]
+        }
+      }
+    },
+    {
+      "name": "User - Logout",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/user/logout",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "user",
+            "logout"
+          ]
+        }
+      }
+    },
+    {
+      "name": "User - Forgot Password",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "username",
+              "value": "testuser"
+            },
+            {
+              "key": "newPassword",
+              "value": "NewPass123"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/user/forgot-password",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "user",
+            "forgot-password"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Departments - List",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/department",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "department"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Departments - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "name",
+              "value": "Engineering"
+            },
+            {
+              "key": "description",
+              "value": "Engineering Dept"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/department",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "department"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Departments - Get By Id",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/department/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "department",
+            "1"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Departments - Update",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "name",
+              "value": "Engineering Updated"
+            },
+            {
+              "key": "description",
+              "value": "Updated Dept"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/department/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "department",
+            "1"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Departments - Delete",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/department/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "department",
+            "1"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Roles - List",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/role",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "role"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Roles - By Department",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/role/department/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "role",
+            "department",
+            "1"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Roles - Get By Id",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/role/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "role",
+            "1"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Roles - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "name",
+              "value": "Developer"
+            },
+            {
+              "key": "description",
+              "value": "Software developer role"
+            },
+            {
+              "key": "departmentId",
+              "value": "1"
+            },
+            {
+              "key": "isAdmin",
+              "value": "false"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/role",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "role"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Roles - Update",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "name",
+              "value": "Senior Developer"
+            },
+            {
+              "key": "description",
+              "value": "Updated developer role"
+            },
+            {
+              "key": "isAdmin",
+              "value": "false"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/role/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "role",
+            "1"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Roles - Delete",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/role/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "role",
+            "1"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Organization - List",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/organization",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "organization"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Organization - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "name",
+              "value": "Organization A"
+            },
+            {
+              "key": "description",
+              "value": "Primary tenant"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/organization",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "organization"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Organization - Activate",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/organization/1/activate",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "organization",
+            "1",
+            "activate"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Organization - Deactivate",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/organization/1/deactivate",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "organization",
+            "1",
+            "deactivate"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Registration - Metadata",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/registration/metadata?organizationId=1&departmentId=1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "registration",
+            "metadata"
+          ],
+          "query": [
+            {
+              "key": "organizationId",
+              "value": "1"
+            },
+            {
+              "key": "departmentId",
+              "value": "1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Registration - Resolve Token",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/registration/resolve?token=sample-token&departmentId=1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "registration",
+            "resolve"
+          ],
+          "query": [
+            {
+              "key": "token",
+              "value": "sample-token"
+            },
+            {
+              "key": "departmentId",
+              "value": "1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Registration - Create Dev Token",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/registration/dev/create-token?organizationId=1&ttlMinutes=60",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "registration",
+            "dev",
+            "create-token"
+          ],
+          "query": [
+            {
+              "key": "organizationId",
+              "value": "1"
+            },
+            {
+              "key": "ttlMinutes",
+              "value": "60"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Ingestion Requests - Submit Request",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": ""
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/ingestion-requests",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "ingestion-requests"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Ingestion Requests - My Requests",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/ingestion-requests/mine",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "ingestion-requests",
+            "mine"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Ingestion Requests - List Organization Requests",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/ingestion-requests",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "ingestion-requests"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Ingestion Requests - Review Request",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"requestId\": 1,\n  \"approve\": true,\n  \"comment\": \"Approved for ingestion\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/ingestion-requests/approve",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "ingestion-requests",
+            "approve"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Chat - Generate (POST)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": 1,\n  \"message\": \"Hello, explain the onboarding flow\",\n  \"agentSelected\": \"gemini-3.6-flash\",\n  \"category\": \"General\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/ai/generate",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "ai",
+            "generate"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Chat - Generate (GET legacy)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/ai/generate?message=hello",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "ai",
+            "generate"
+          ],
+          "query": [
+            {
+              "key": "message",
+              "value": "hello"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Chat - Check Ingestion",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/ai/check-ingestion?query=startup",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "ai",
+            "check-ingestion"
+          ],
+          "query": [
+            {
+              "key": "query",
+              "value": "startup"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Ingestion - Upload File",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": ""
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/ai/admin/ingest",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "ai",
+            "admin",
+            "ingest"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Ingestion - Upload Multiple",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "files",
+              "type": "file",
+              "src": ""
+            },
+            {
+              "key": "files",
+              "type": "file",
+              "src": ""
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/ai/admin/ingest-multiple",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "ai",
+            "admin",
+            "ingest-multiple"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Ingestion - From URL",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "url",
+              "value": "https://example.com/doc.pdf"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/ai/admin/ingest-from-url",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "ai",
+            "admin",
+            "ingest-from-url"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Chat History - By User",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/chat-history/user/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "chat-history",
+            "user",
+            "1"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Chat History - By User and Category",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/chat-history/user/1/category/General",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "chat-history",
+            "user",
+            "1",
+            "category",
+            "General"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Chat History - Get By Id",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/chat-history/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "chat-history",
+            "1"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Chat History - Save",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "userId",
+              "value": "1"
+            },
+            {
+              "key": "query",
+              "value": "Who is the admin?"
+            },
+            {
+              "key": "response",
+              "value": "Admin is John"
+            },
+            {
+              "key": "agentSelected",
+              "value": "gemini-3.6-flash"
+            },
+            {
+              "key": "uploadedFiles",
+              "value": ""
+            },
+            {
+              "key": "category",
+              "value": "General"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/chat-history",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "chat-history"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Chat History - Update",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "response",
+              "value": "Updated response text"
+            },
+            {
+              "key": "category",
+              "value": "FAQs"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/chat-history/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "chat-history",
+            "1"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Chat History - Delete",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/chat-history/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "chat-history",
+            "1"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Chat History - Delete By User",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/chat-history/user/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "chat-history",
+            "user",
+            "1"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Settings - Get",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/settings/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "settings",
+            "1"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Settings - Update",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"darkMode\": true,\n  \"sidebarPosition\": \"left\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/settings/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "settings",
+            "1"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Settings - Toggle Dark Mode",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/settings/1/dark-mode",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "settings",
+            "1",
+            "dark-mode"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Settings - Sidebar Position",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/settings/1/sidebar-position?position=right",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "settings",
+            "1",
+            "sidebar-position"
+          ],
+          "query": [
+            {
+              "key": "position",
+              "value": "right"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "User - Assign Role",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/user/1/role?roleId=2",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "user",
+            "1",
+            "role"
+          ],
+          "query": [
+            {
+              "key": "roleId",
+              "value": "2"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "User - Activate",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/user/1/activate",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "user",
+            "1",
+            "activate"
+          ]
+        }
+      }
+    },
+    {
+      "name": "User - Deactivate",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/user/1/deactivate",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "user",
+            "1",
+            "deactivate"
+          ]
+          }
+        }
+      }
+  ]
+}
