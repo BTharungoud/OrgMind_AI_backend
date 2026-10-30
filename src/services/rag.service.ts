@@ -29,7 +29,7 @@ export const ragService = {
          LEFT JOIN orgmind.department dep ON dep.id = c.department_id
         WHERE c.organization_id = $2 AND d.status = 'INDEXED'
           AND ($3::boolean OR c.department_id = $4 OR c.department_id IS NULL)
-          AND (cardinality($5::text[]) = 0 OR dep.name = ANY($5::text[]))
+          AND (cardinality($5::text[]) = 0 OR c.department_id IS NULL OR dep.name = ANY($5::text[]))
         ORDER BY c.embedding <=> $1::vector LIMIT $6`,
       [vector(embedding), auth.organizationId, auth.roleName.toLowerCase() === 'super admin', auth.departmentId, departmentNames, env.RETRIEVAL_LIMIT],
     )).rows

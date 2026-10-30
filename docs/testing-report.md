@@ -9,9 +9,11 @@
 
 ## External Verification Pending
 
-- Aiven database and migrations: password is a placeholder.
+- Aiven connectivity and read-only schema inspection: verified with the supplied CA certificate.
+- Direct database setup: verified against the initially empty Aiven database without a migration-history table.
+- Super Admin login: verified through `POST /user/login`; access and refresh tokens were returned.
 - Gemini generation and embeddings: API key is a placeholder.
-- Newman: requires a running, migrated backend and valid credentials.
+- Newman: requires a running initialized backend and valid credentials.
 
 ## Verified on Node.js 24.11.1
 

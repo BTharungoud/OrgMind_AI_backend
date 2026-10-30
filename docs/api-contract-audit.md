@@ -18,7 +18,7 @@ The collection and frontend use root paths. `API_PREFIX` therefore defaults to e
 | POST | `/user/login` | Public | JSON username/password |
 | POST | `/user/refresh-token` | Public | JSON refresh token |
 | POST | `/user/logout` | Bearer | Revokes active refresh tokens |
-| POST | `/user/forgot-password` | Public, rate limited | URL-encoded username/newPassword |
+| POST | `/user/forgot-password` | Bearer, rate limited | Authenticated password replacement |
 | GET, POST | `/department` | Bearer; Super Admin writes | List/create |
 | GET, PUT, DELETE | `/department/:id` | Bearer; Super Admin writes | Read/update/soft-delete |
 | GET, POST | `/role` | Bearer; Super Admin writes | List/create |

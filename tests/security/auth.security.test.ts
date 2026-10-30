@@ -5,6 +5,7 @@ import { app } from '../../src/app.js'
 const protectedRequests = [
   ['get', '/department'], ['get', '/role'], ['get', '/organization'],
   ['get', '/chat-history/user/1'], ['get', '/settings/1'], ['get', '/ingestion-requests/mine'],
+  ['post', '/user/forgot-password'],
 ] as const
 
 describe('protected routes', () => {

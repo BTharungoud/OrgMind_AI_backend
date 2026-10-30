@@ -1,3 +1,4 @@
+-- One-time direct schema initialization for a new empty OrgMind database.
 CREATE EXTENSION IF NOT EXISTS vector;
 CREATE SCHEMA IF NOT EXISTS orgmind;
 

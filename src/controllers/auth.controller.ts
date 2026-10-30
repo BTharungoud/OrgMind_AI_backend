@@ -23,6 +23,11 @@ export const authController = {
   },
   async forgotPassword(request: Request, response: Response) {
     const body = request.body as { username: string; newPassword: string }
+    const auth = request.auth
+    if (!auth) throw new ApiError(401, 'Authentication is required.', 'UNAUTHORIZED')
+    if (!auth.isAdmin && auth.username.toLowerCase() !== body.username.toLowerCase()) {
+      throw new ApiError(403, 'You can update only your own password.', 'FORBIDDEN')
+    }
     await authService.resetPassword(body.username, body.newPassword)
     response.json(successResponse('Password updated successfully', null))
   },

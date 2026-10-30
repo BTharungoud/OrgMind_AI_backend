@@ -7,9 +7,10 @@ Node.js 24, Express 4, TypeScript, PostgreSQL/pgvector, JWT, and Gemini backend 
 1. Install Node.js 24 and run `npm install`.
 2. Update `.env` with the real Aiven password, Gemini key, and a strong random `JWT_SECRET`.
 3. Keep `API_PREFIX` empty because the frontend uses root paths and the server has no `/api` route.
-4. Review `docs/database-schema-audit.md`, back up the database, and test against a staging clone.
-5. Run `npm run migrate` only after schema review.
-6. Start with `npm run dev`; the default URL is `http://localhost:8081`.
+4. Run `npm run db:inspect` to confirm the target database state.
+5. For a new empty database, run `npm run db:setup` once to initialize the schema and create the Super Admin.
+6. Store the generated password securely; the setup command will not print or reset it again.
+7. Start with `npm run dev`; the default URL is `http://localhost:8081`.
 
 Set the frontend `API_BASE_URL` to `http://localhost:8081` or the deployed backend origin.
 
@@ -22,7 +23,8 @@ Set the frontend `API_BASE_URL` to `http://localhost:8081` or the deployed backe
 - `npm run lint`: ESLint.
 - `npm test`: deterministic tests.
 - `npm run test:integration`: contract/security/integration suites.
-- `npm run migrate`: apply pending SQL migrations.
+- `npm run db:inspect`: inspect schemas and extensions without writing data.
+- `npm run db:setup`: initialize a new empty database and create the first Super Admin.
 - `npm run postman`: run the bundled collection against port 8081.
 
 ## Security Notes
@@ -30,10 +32,10 @@ Set the frontend `API_BASE_URL` to `http://localhost:8081` or the deployed backe
 - Never commit `.env`; it is ignored.
 - Configure exact `CORS_ORIGINS`, separated by commas. Wildcards are not accepted.
 - Registration dev tokens are disabled unless explicitly enabled outside production.
-- Forgot-password behavior is retained for contract compatibility but should eventually use a time-limited email verification flow.
+- Password replacement requires an authenticated session; a future public recovery flow should use a time-limited email token.
 - PDF, plain text, Markdown, CSV, and JSON uploads are accepted up to `MAX_UPLOAD_BYTES`.
 
-## Migration Procedure
+## Database Setup
 
 First run static and deterministic checks:
 
@@ -42,14 +44,15 @@ npm run typecheck
 npm test
 ```
 
-After a backup and staging verification:
+After confirming the database is empty and the CA certificate is configured:
 
 ```powershell
-npm run migrate
+npm run db:inspect
+npm run db:setup
 npm run dev
 ```
 
-Verify health, registration metadata, registration/login, document ingestion, and grounded generation. Use a dedicated test database for integration tests; never point destructive tests at production.
+`db:setup` executes `schema.sql` directly and does not create or use a migration-history table. Verify health, login, registration metadata, document ingestion, and grounded generation. Use a dedicated test database for integration tests.
 
 ## Troubleshooting
 

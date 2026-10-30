@@ -11,6 +11,7 @@ const envSchema = z.object({
   PORT: z.coerce.number().int().positive().default(8081),
   API_PREFIX: z.string().default(''),
   DATABASE_URL: z.string().min(1),
+  DATABASE_CA_CERT_PATH: z.string().trim().optional(),
   DATABASE_SSL_REJECT_UNAUTHORIZED: booleanString,
   DATABASE_POOL_MAX: z.coerce.number().int().positive().max(50).default(10),
   GEMINI_API_KEY: z.string().min(1),
@@ -27,6 +28,8 @@ const envSchema = z.object({
   RETRIEVAL_LIMIT: z.coerce.number().int().positive().max(20).default(6),
   DEFAULT_ORGANIZATION_ID: z.coerce.number().int().positive().default(1),
   ENABLE_DEV_REGISTRATION_TOKENS: booleanString,
+  SUPER_ADMIN_USERNAME: z.string().trim().min(3).max(100).default('superadmin'),
+  SUPER_ADMIN_EMAIL: z.email().default('superadmin@orgmind.local'),
 })
 
 const result = envSchema.safeParse(process.env)

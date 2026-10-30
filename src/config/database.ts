@@ -1,17 +1,33 @@
+import { readFileSync } from 'node:fs'
 import pg from 'pg'
 import type { PoolClient, QueryResultRow } from 'pg'
 import { env } from './env.js'
 
-const useTls = env.DATABASE_URL.includes('sslmode=require') || env.NODE_ENV === 'production'
+const databaseUrl = new URL(env.DATABASE_URL)
+const caCertificate = env.DATABASE_CA_CERT_PATH
+  ? readFileSync(env.DATABASE_CA_CERT_PATH, 'utf8')
+  : undefined
+const useTls = Boolean(caCertificate) || databaseUrl.searchParams.has('sslmode') || env.NODE_ENV === 'production'
+
+if (caCertificate) {
+  // The explicit CA configuration provides verify-full semantics and avoids
+  // pg replacing the SSL object with options parsed from the connection URL.
+  databaseUrl.searchParams.delete('sslmode')
+}
 
 export const pool = new pg.Pool({
-  connectionString: env.DATABASE_URL,
+  connectionString: databaseUrl.toString(),
   max: env.DATABASE_POOL_MAX,
   idleTimeoutMillis: 30_000,
   connectionTimeoutMillis: 10_000,
   statement_timeout: 30_000,
   ssl: useTls
-    ? { rejectUnauthorized: env.DATABASE_SSL_REJECT_UNAUTHORIZED }
+    ? {
+        ca: caCertificate,
+        rejectUnauthorized: caCertificate
+          ? true
+          : env.DATABASE_SSL_REJECT_UNAUTHORIZED,
+      }
     : undefined,
 })
 

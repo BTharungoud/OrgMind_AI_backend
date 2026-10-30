@@ -11,5 +11,5 @@ authRouter.post('/login', authRateLimit, validate(loginSchema), asyncHandler(aut
 authRouter.post('/register', authRateLimit, validate(registerSchema), asyncHandler(authController.register))
 authRouter.post('/refresh-token', authRateLimit, validate(refreshSchema), asyncHandler(authController.refresh))
 authRouter.post('/logout', requireAuth, asyncHandler(authController.logout))
-authRouter.post('/forgot-password', authRateLimit, validate(forgotPasswordSchema), asyncHandler(authController.forgotPassword))
+authRouter.post('/forgot-password', authRateLimit, requireAuth, validate(forgotPasswordSchema), asyncHandler(authController.forgotPassword))
 

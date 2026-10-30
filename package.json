@@ -16,7 +16,9 @@
     "test": "vitest run",
     "test:integration": "vitest run tests/integration tests/contract tests/security",
     "test:coverage": "vitest run --coverage",
-    "migrate": "tsx src/database/migrate.ts",
+    "db:inspect": "tsx src/database/inspect.ts",
+    "db:diagnose": "tsx src/database/diagnose.ts",
+    "db:setup": "tsx src/database/bootstrap.ts",
     "postman": "npx --yes newman@6.2.1 run postman_collection.json --env-var baseUrl=http://localhost:8081"
   },
   "dependencies": {

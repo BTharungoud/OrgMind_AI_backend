@@ -36,10 +36,11 @@ export const documentService = {
     try {
       const chunks = chunkText(await extractText(file))
       if (!chunks.length) throw new ApiError(400, 'The document contains no readable text.', 'EMPTY_DOCUMENT')
-      const embedded: Array<{ index: number; content: string; embedding: number[] }> = []
-      for (const chunk of chunks) {
-        embedded.push({ ...chunk, embedding: await geminiService.embed(chunk.content) })
-      }
+      const embeddings = await geminiService.embedMany(chunks.map(chunk => chunk.content))
+      const embedded = chunks.map((chunk, index) => ({
+        ...chunk,
+        embedding: embeddings[index] as number[],
+      }))
       await withTransaction(async client => {
         for (const chunk of embedded) {
           await client.query(
